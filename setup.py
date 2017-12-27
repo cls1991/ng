@@ -8,7 +8,7 @@ with open('README.rst', 'r') as f:
 
 setup(
     name='ng',
-    version='1.0.1',
+    version='1.0.2',
     keywords=['wifi', 'password', 'ip'],
     description="Get password of the wifi you're connected, and your current ip address.",
     long_description=readme,

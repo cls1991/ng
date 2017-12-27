@@ -74,13 +74,16 @@ def _hack_ip():
     local_ip = LOCAL_IP_ADDRESS
     public_ip = LOCAL_IP_ADDRESS
     command = ['ifconfig']
+    if system == 'Darwin':
+        pattern = re.compile(r'inet (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})')
+    else:
+        pattern = re.compile(r'inet addr:(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})')
     rs = _exec(command)
-    for match in re.finditer(r'inet (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', rs):
+    for match in re.finditer(pattern, rs):
         sip = match.group('ip')
         if sip != LOCAL_IP_ADDRESS:
             local_ip = sip
             break
-
     try:
         r = requests.get(VERIFY_HOST)
         public_ip = r.json()['origin']

@@ -13,7 +13,7 @@ ng
 .. image:: https://travis-ci.org/cls1991/ng.svg?branch=master
     :target: https://travis-ci.org/cls1991/ng
 
-Get password of the wifi you're connected, and your current ip address.
+Get password of the wifi you're connected, and your current ip address, supports linux, macos.
 
 ☤ Quickstart
 ------------
@@ -24,8 +24,8 @@ Get your ip address:
 
     $ ng ip
     `
-    local_ip: 192.168.1.114
-    public_ip: 49.4.160.250
+    local_ip:192.168.1.114
+    public_ip:49.4.160.250
     `
 
 Get wifi password:
