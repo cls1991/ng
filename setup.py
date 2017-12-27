@@ -8,9 +8,9 @@ with open('README.rst', 'r') as f:
 
 setup(
     name='ng',
-    version='0.1.0',
+    version='1.0.1',
     keywords=['wifi', 'password', 'ip'],
-    description="Get ip and password of the wifi you're connected, just for fun!",
+    description="Get password of the wifi you're connected, and your current ip address.",
     long_description=readme,
     author='cls1991',
     author_email='tzk19910406@hotmail.com',
@@ -18,6 +18,7 @@ setup(
     py_modules=['ng'],
     install_requires=[
         'click>=6.7',
+        'requests==2.18.4',
         'pytest>=3.3.1'
     ],
     license='Apache License 2.0',
@@ -27,7 +28,7 @@ setup(
         'console_scripts': ['ng = ng:cli']
     },
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'License :: OSI Approved :: Apache Software License',

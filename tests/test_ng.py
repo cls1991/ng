@@ -24,7 +24,7 @@ def test_ng_ip():
 
 
 def test_ng_password():
-    assert execute(['ng', 'password'])
+    assert execute(['ng', 'wp'])
 
 
 def test_ng_help():
