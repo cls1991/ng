@@ -35,8 +35,8 @@ def _detect_wifi_ssid():
         command = ['/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport', '-I']
         pattern = re.compile(r' SSID: (?P<ssid>\w+)')
     else:
-        command = ['nm-tool']
-        pattern = re.compile(r'\*(?P<ssid>\w+):')
+        command = ['nmcli', '-t', '-f', 'active,ssid', 'dev', 'wifi']
+        pattern = re.compile(r"yes:'(?P<ssid>\w+)'")
 
     rs = _exec(command)
     match = re.search(pattern, rs)
