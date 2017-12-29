@@ -1,14 +1,19 @@
 #!/usr/bin/env python
 # coding: utf8
 
+import codecs
+import os
+
 from setuptools import setup
 
-with open('README.rst', 'r') as f:
+here = os.path.abspath(os.path.dirname(__file__))
+
+with codecs.open(os.path.join(here, 'README.rst'), 'r', encoding='utf8') as f:
     readme = f.read()
 
 setup(
     name='ng',
-    version='1.0.2',
+    version='1.0.3',
     keywords=['wifi', 'password', 'ip'],
     description="Get password of the wifi you're connected, and your current ip address.",
     long_description=readme,
