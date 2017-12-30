@@ -33,10 +33,10 @@ def _detect_wifi_ssid():
 
     if system == 'Darwin':
         command = ['/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport', '-I']
-        pattern = re.compile(r' SSID: (?P<ssid>.+?)\\n')
+        pattern = re.compile(r' SSID: (?P<ssid>.+)')
     else:
         command = ['nmcli', '-t', '-f', 'active,ssid', 'dev', 'wifi']
-        pattern = re.compile(r"yes:'(?P<ssid>\w+)'")
+        pattern = re.compile(r"yes:'(?P<ssid>.+)'")
 
     rs = _exec(command)
     match = re.search(pattern, rs)
@@ -56,7 +56,7 @@ def _hack_wifi_password(ssid):
         pattern = re.compile(r'password: "(?P<password>.+)"')
     else:
         command = ['sudo', 'cat', '/etc/NetworkManager/system-connections/{0}'.format(ssid)]
-        pattern = re.compile(r'psk\=(?P<password>\w+)')
+        pattern = re.compile(r'psk\=(?P<password>.+)')
 
     rs = _exec(command)
     match = re.search(pattern, rs)
