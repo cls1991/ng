@@ -33,7 +33,7 @@ def _detect_wifi_ssid():
 
     if system == 'Darwin':
         command = ['/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport', '-I']
-        pattern = re.compile(r' SSID: (?P<ssid>\w+)')
+        pattern = re.compile(r' SSID: (?P<ssid>.+?)\\n')
     else:
         command = ['nmcli', '-t', '-f', 'active,ssid', 'dev', 'wifi']
         pattern = re.compile(r"yes:'(?P<ssid>\w+)'")
