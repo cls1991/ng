@@ -4,17 +4,17 @@
     Get password of the wifi you're connected, and your current ip address.
 """
 
+import locale
 import platform
 import re
 import subprocess
 import sys
-import locale
 
 import click
 import requests
 
 SUPPORTED_SYSTEMS = ['Darwin', 'Linux', 'Windows']
-LOCAL_IP_ADDRESS = '127.0.0.1'
+DEFAULT_IP_ADDRESS = '127.0.0.1'
 VERIFY_HOST = 'https://httpbin.org/ip'
 
 
@@ -22,12 +22,13 @@ def _system():
     return platform.system()
 
 
+def _language():
+    return locale.getdefaultlocale()[0]
+
+
 def _exec(command):
     out, err = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     return '{0}{1}'.format(out, err).strip()
-
-def _language():
-    return locale.getdefaultlocale()[0]
 
 
 def _detect_wifi_ssid():
@@ -70,7 +71,7 @@ def _hack_wifi_password(ssid):
         if language == 'zh_CN':
             pattern = re.compile(r'{0}.+: (?P<password>.+)'.format(u'关键内容'.encode(sys.stdin.encoding)))
         else:
-            pattern = re.compile(r'Key Content.+: (?P<password).+')
+            pattern = re.compile(r'Key Content.+: (?P<password>.+)')
     rs = _exec(command)
     match = re.search(pattern, rs)
     if not match:
@@ -84,8 +85,7 @@ def _hack_ip():
     if system not in SUPPORTED_SYSTEMS:
         return False, 'Unknown operation system {0}'.format(system)
 
-    local_ip = LOCAL_IP_ADDRESS
-    public_ip = LOCAL_IP_ADDRESS
+    local_ip = public_ip = DEFAULT_IP_ADDRESS
     if system == 'Darwin':
         command = ['ifconfig']
         pattern = re.compile(r'inet (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})')
@@ -98,7 +98,7 @@ def _hack_ip():
     rs = _exec(command)
     for match in re.finditer(pattern, rs):
         sip = match.group('ip')
-        if sip != LOCAL_IP_ADDRESS:
+        if sip != DEFAULT_IP_ADDRESS:
             local_ip = sip
             break
     try:
