@@ -8,11 +8,12 @@ import platform
 import re
 import subprocess
 import sys
+import locale
 
 import click
 import requests
 
-SUPPORTED_SYSTEMS = ['Darwin', 'Linux']
+SUPPORTED_SYSTEMS = ['Darwin', 'Linux', 'Windows']
 LOCAL_IP_ADDRESS = '127.0.0.1'
 VERIFY_HOST = 'https://httpbin.org/ip'
 
@@ -25,6 +26,9 @@ def _exec(command):
     out, err = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     return '{0}{1}'.format(out, err).strip()
 
+def _language():
+    return locale.getdefaultlocale()[0]
+
 
 def _detect_wifi_ssid():
     system = _system()
@@ -34,9 +38,12 @@ def _detect_wifi_ssid():
     if system == 'Darwin':
         command = ['/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport', '-I']
         pattern = re.compile(r' SSID: (?P<ssid>.+)')
-    else:
+    elif system == 'Linux':
         command = ['nmcli', '-t', '-f', 'active,ssid', 'dev', 'wifi']
         pattern = re.compile(r"yes:'(?P<ssid>.+)'")
+    else:
+        command = ['netsh', 'wlan', 'show', 'interfaces']
+        pattern = re.compile(r' SSID.+: (?P<ssid>.+)\r')
 
     rs = _exec(command)
     match = re.search(pattern, rs)
@@ -54,10 +61,16 @@ def _hack_wifi_password(ssid):
     if system == 'Darwin':
         command = ['security', 'find-generic-password', '-D', 'AirPort network password', '-ga', ssid]
         pattern = re.compile(r'password: "(?P<password>.+)"')
-    else:
+    elif system == 'Linux':
         command = ['sudo', 'cat', '/etc/NetworkManager/system-connections/{0}'.format(ssid)]
         pattern = re.compile(r'psk\=(?P<password>.+)')
-
+    else:
+        command = ['netsh', 'wlan', 'show', 'profile', 'name={0}'.format(ssid), 'key=clear']
+        language = _language()
+        if language == 'zh_CN':
+            pattern = re.compile(r'{0}.+: (?P<password>.+)'.format(u'关键内容'.encode(sys.stdin.encoding)))
+        else:
+            pattern = re.compile(r'Key Content.+: (?P<password).+')
     rs = _exec(command)
     match = re.search(pattern, rs)
     if not match:
@@ -76,9 +89,12 @@ def _hack_ip():
     if system == 'Darwin':
         command = ['ifconfig']
         pattern = re.compile(r'inet (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})')
-    else:
+    elif system == 'Linux':
         command = ['ip', 'addr']
         pattern = re.compile(r'inet (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})')
+    else:
+        command = ['ipconfig']
+        pattern = re.compile(r'IPv4.+: (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})')
     rs = _exec(command)
     for match in re.finditer(pattern, rs):
         sip = match.group('ip')

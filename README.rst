@@ -13,7 +13,7 @@ ng
 .. image:: https://travis-ci.org/cls1991/ng.svg?branch=master
     :target: https://travis-ci.org/cls1991/ng
 
-Get password of the wifi you're connected, and your current ip address, supports linux, macos.
+Get password of the wifi you're connected, and your current ip address, supports linux, macos, windows.
 
 ☤ Quickstart
 ------------
