@@ -28,7 +28,7 @@ def _language():
 
 def _exec(command):
     out, err = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-    return '{0}{1}'.format(out, err).strip()
+    return (out + err).decode(sys.stdout.encoding).strip()
 
 
 def _detect_wifi_ssid():
@@ -44,7 +44,7 @@ def _detect_wifi_ssid():
         pattern = re.compile(r"yes:'(?P<ssid>.+)'")
     else:
         command = ['netsh', 'wlan', 'show', 'interfaces']
-        pattern = re.compile(r' SSID.+: (?P<ssid>.+)\r')
+        pattern = re.compile(r' SSID.+: (?P<ssid>.+)')
 
     rs = _exec(command)
     match = re.search(pattern, rs)
