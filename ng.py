@@ -13,6 +13,14 @@ import sys
 import click
 import requests
 
+_ver = sys.version_info
+
+# Python 2.x?
+is_py2 = (_ver[0] == 2)
+
+# Python 3.x?
+is_py3 = (_ver[0] == 3)
+
 SUPPORTED_SYSTEMS = ['Darwin', 'Linux', 'Windows']
 DEFAULT_IP_ADDRESS = '127.0.0.1'
 VERIFY_HOST = 'https://httpbin.org/ip'
@@ -23,12 +31,16 @@ def _system():
 
 
 def _language():
-    return locale.getdefaultlocale()[0]
+    return locale.getdefaultlocale()
 
 
 def _exec(command):
     out, err = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-    return (out + err).decode(sys.stdout.encoding).strip()
+    if is_py3:
+        language = _language()
+        return (out + err).decode(language[1]).strip()
+
+    return (out + err).strip()
 
 
 def _detect_wifi_ssid():
@@ -44,7 +56,7 @@ def _detect_wifi_ssid():
         pattern = re.compile(r"yes:'(?P<ssid>.+)'")
     else:
         command = ['netsh', 'wlan', 'show', 'interfaces']
-        pattern = re.compile(r' SSID.+: (?P<ssid>.+)')
+        pattern = re.compile(r' SSID.+: (?P<ssid>.+)\r')
 
     rs = _exec(command)
     match = re.search(pattern, rs)
@@ -68,8 +80,11 @@ def _hack_wifi_password(ssid):
     else:
         command = ['netsh', 'wlan', 'show', 'profile', 'name={0}'.format(ssid), 'key=clear']
         language = _language()
-        if language == 'zh_CN':
-            pattern = re.compile(r'{0}.+: (?P<password>.+)'.format(u'关键内容'.encode(sys.stdin.encoding)))
+        if language[0] == 'zh_CN':
+            if is_py3:
+                pattern = re.compile(r'关键内容.+: (?P<password>.+)')
+            else:
+                pattern = re.compile(r'{0}.+: (?P<password>.+)'.format(u'关键内容'.encode(language[1])))
         else:
             pattern = re.compile(r'Key Content.+: (?P<password>.+)')
     rs = _exec(command)
