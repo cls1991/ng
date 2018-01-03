@@ -25,6 +25,7 @@ def test_ng_ip():
 
 def test_ng_password():
     assert execute(['ng', 'wp'])
+    assert execute(['ng', 'wp', 'cygwin-wifi.1'])
 
 
 def test_ng_help():
