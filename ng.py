@@ -37,15 +37,18 @@ is_py3 = (_ver[0] == 3)
 SUPPORTED_SYSTEMS = ['Darwin', 'Linux', 'Windows']
 DEFAULT_IP_ADDRESS = '127.0.0.1'
 VERIFY_HOST = 'https://httpbin.org/ip'
-
+DEFAULT_LOCALE_LANGUAGE = ('en_US', 'UTF-8')
 
 def _system():
     return platform.system()
 
 
 def _language():
-    return locale.getdefaultlocale()
-
+    try:
+        locale = locale.getdefaultlocale()
+    except ValueError:
+        locale = DEFAULT_LOCALE_LANGUAGE
+    return locale
 
 def _exec(command):
     out, err = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
