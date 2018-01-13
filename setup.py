@@ -13,7 +13,7 @@ with codecs.open(os.path.join(here, 'README.rst'), 'r', encoding='utf8') as f:
 
 setup(
     name='ng',
-    version='1.1.4',
+    version='1.1.5',
     keywords=['wifi', 'password', 'ip'],
     description="Get password of the wifi you're connected, and your current ip address.",
     long_description=readme,
@@ -23,7 +23,7 @@ setup(
     py_modules=['ng'],
     install_requires=[
         'click>=6.7',
-        'requests==2.18.4',
+        'requests>=2.18.4',
         'pytest>=3.3.1'
     ],
     license='Apache License 2.0',
